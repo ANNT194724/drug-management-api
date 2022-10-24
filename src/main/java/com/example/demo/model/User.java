@@ -1,17 +1,12 @@
 package com.example.demo.model;
 
 import java.sql.Date;
-import java.util.Collection;
-import java.util.Collections;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +30,4 @@ public class User {
 	private String email;
 	private String address;
 	
-	public Collection<? extends GrantedAuthority> getRoles() {        
-		return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
-    }
 }

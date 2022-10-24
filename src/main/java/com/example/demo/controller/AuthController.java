@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.LoginDto;
 import com.example.demo.dto.RegisterDto;
+import com.example.demo.jwt.JwtTokenProvider;
+import com.example.demo.model.CustomUserDetails;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 
@@ -33,12 +35,16 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
+    @Autowired
+    private JwtTokenProvider tokenProvider;
+    
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto){
+    public String authenticateUser(@RequestBody LoginDto loginDto){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                 (loginDto.getEmail() == null) ? loginDto.getPhonenumber() : loginDto.getEmail(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("User logged in successfully!.", HttpStatus.OK);
+        String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+        return jwt;
     }
     
     @PostMapping("/register")

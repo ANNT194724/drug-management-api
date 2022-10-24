@@ -1,1 +1,0 @@
-# drug-management-api

@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
 
+import com.example.demo.model.CustomUserDetails;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 
@@ -26,9 +27,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (user == null) {
             throw new UsernameNotFoundException(phonenumberOrEmail);
         }
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),
-                user.getPassword(), user.getRoles());
+        return new CustomUserDetails(user);
 	}
 	
+	public UserDetails loadUserById(Integer userId) {
+		User user = userRepository.findByUserId(userId);
+		return new CustomUserDetails(user);
+	}
 	
 }
