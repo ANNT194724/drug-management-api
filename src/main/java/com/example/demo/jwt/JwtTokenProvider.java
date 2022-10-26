@@ -20,7 +20,7 @@ public class JwtTokenProvider {
 
     private final String JWT_SECRET = "secret";
 
-    private final long JWT_EXPIRATION = 3600000L;
+    private final long JWT_EXPIRATION = 18000000L;
 
     public String generateToken(CustomUserDetails customUserDetails) {
         Date now = new Date();

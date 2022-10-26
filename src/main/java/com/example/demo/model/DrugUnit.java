@@ -2,7 +2,6 @@ package com.example.demo.model;
 
 import java.sql.Date;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,22 +11,22 @@ import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-@Setter
+
 @Getter
+@Setter
 @ToString
 @Entity
-@Table(name = "users")
-public class User {
+@Table(name = "drug_unit")
+public class DrugUnit {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer userId;
-	private String name;
-	private String password;
+	private Integer drugUnitId;
+	private String unitName;
+	private Integer drugId;
+	private String drugName;
+	private Integer unitQty;
+	private Long maxPrice;
 	private Date createdDate;
-	@Column(unique = true)
-	private String phonenumber;
-	@Column(unique = true)
-	private String email;
-	private String address;
-	
+	private Date updatedDate;
+	private Integer updatedUser;
 }

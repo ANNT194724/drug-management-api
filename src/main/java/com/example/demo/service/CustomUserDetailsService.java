@@ -35,4 +35,24 @@ public class CustomUserDetailsService implements UserDetailsService {
 		return new CustomUserDetails(user);
 	}
 	
+	public User findByPhonenumberOrEmail(String phonenumber, String email) {
+		return userRepository.findByPhonenumberOrEmail(phonenumber, email);
+	}
+	
+    public User findByUserId(Integer userId) {
+    	return userRepository.findByUserId(userId);
+    }
+    
+    public Boolean existsByPhonenumber(String phonenumber) {
+    	return userRepository.existsByPhonenumber(phonenumber);
+    }
+    
+    public Boolean existsByEmail(String email) {
+    	return userRepository.existsByEmail(email);
+    }
+
+	public void save(User user) {
+		userRepository.save(user);
+	}
+	
 }
