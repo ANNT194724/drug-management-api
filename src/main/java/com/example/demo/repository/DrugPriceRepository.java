@@ -12,10 +12,10 @@ import com.example.demo.model.DrugPrice;
 
 public interface DrugPriceRepository extends JpaRepository<DrugPrice, Integer>{
 	@Modifying
-	@Query(value = "DELETE FROM drug_price WHERE drug_id = :id", nativeQuery = true)
+	@Query(value = "DELETE FROM drug_price WHERE drug_unit = :id", nativeQuery = true)
 	void deleteByDrugId(@Param("id") Integer id);
 
-	@Query(value = "select u.unit_name, unit_qty, max_price, price, price_before_vat, wholesale_price, wholesale_price_before_vat "
+	@Query(value = "select u.drug_unit_id, u.unit_name, unit_qty, max_price, price, price_before_vat, wholesale_price, wholesale_price_before_vat "
 			+ "from drug_unit as u join drug_price as p on u.drug_unit_id = p.drug_unit_id where u.drug_id = :id", nativeQuery = true)
 	List<PriceView> viewPriceById(@Param("id") Integer id);
 }

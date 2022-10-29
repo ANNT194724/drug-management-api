@@ -11,24 +11,22 @@ import com.example.demo.model.DrugPrice;
 import com.example.demo.repository.DrugPriceRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class DrugPriceService {
 	@Autowired
 	private DrugPriceRepository drugPriceRepository;
-	     
-    public List<DrugPrice> viewAll() {
-        return drugPriceRepository.findAll();
-    }
-     
+
+    @Transactional
     public void save(DrugPrice drugPrice) {
         drugPriceRepository.save(drugPrice);
     }
-     
+
+    @Transactional
     public void deleteByDrugId(Integer id) {
         drugPriceRepository.deleteByDrugId(id);
     }
     
-    public List<PriceView> viewPricebyDrugId(Integer id) {
+    public List<PriceView> viewPriceByDrugId(Integer id) {
     	return drugPriceRepository.viewPriceById(id);
     }
 }

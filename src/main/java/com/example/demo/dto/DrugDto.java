@@ -4,8 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
+
 @Data
 public class DrugDto {
+	@NotBlank
 	@JsonProperty("drug_name")
 	private String drugName;
 	@JsonProperty("drug_alias")
@@ -29,10 +33,11 @@ public class DrugDto {
 	private String indication;
 	@JsonProperty("adverse_reaction")
 	private String adverseReaction;
-	private String contradication;
+	private String contraindication;
 	private String precaution;
-	private String overdosage;
+	private String overdose;
 	private String concentration;
+	@PositiveOrZero
 	@JsonProperty("vat_percent")
 	private Integer vatPercent;
 	private String note;

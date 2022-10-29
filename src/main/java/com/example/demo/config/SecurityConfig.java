@@ -3,6 +3,7 @@ package com.example.demo.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -38,6 +39,9 @@ public class SecurityConfig {
          .csrf().disable()
          .authorizeRequests()
          .antMatchers("/api/auth/**").permitAll()
+		 .antMatchers(HttpMethod.POST, "/api/drugs/**").hasAuthority("ADMIN")
+		 .antMatchers(HttpMethod.PUT, "/api/drugs/**").hasAuthority("ADMIN")
+		 .antMatchers(HttpMethod.DELETE, "/api/drugs/**").hasAuthority("ADMIN")
          .anyRequest()
          .authenticated()
          .and()
@@ -45,7 +49,10 @@ public class SecurityConfig {
          .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		 .and()
 		 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-		 
+		 http.headers()
+				 .xssProtection()
+				 .and()
+				 .contentSecurityPolicy("script-src 'self'");
 		 return http.build();
 	}
 	

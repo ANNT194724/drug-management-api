@@ -1,13 +1,11 @@
 package com.example.demo.model;
 
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,8 +24,15 @@ public class User {
 	private Date createdDate;
 	@Column(unique = true)
 	private String phonenumber;
+	@Email(message = "Invalid email")
 	@Column(unique = true)
 	private String email;
 	private String address;
-	
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinTable(
+			name = "users_roles",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id")
+	)
+	private Set<Role> roles = new HashSet<>();
 }

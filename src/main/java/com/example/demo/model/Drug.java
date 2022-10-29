@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +23,7 @@ public class Drug {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer drugId;
+	@NotBlank
 	private String drugName;
 	private String drugAlias;
 	private String licenseCode;
@@ -35,10 +38,11 @@ public class Drug {
 	private String dosage;
 	private String indication;
 	private String adverseReaction;
-	private String contradication;
+	private String contraindication;
 	private String precaution;
-	private String overdosage;
+	private String overdose;
 	private String concentration;
+	@PositiveOrZero
 	private Integer vatPercent;
 	private String note;
 	private Date createdDate;

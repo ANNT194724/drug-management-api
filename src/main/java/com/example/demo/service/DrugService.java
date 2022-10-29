@@ -10,7 +10,7 @@ import com.example.demo.model.Drug;
 import com.example.demo.repository.DrugRepository;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class DrugService {
 	@Autowired
 	private DrugRepository drugRepository;
@@ -18,15 +18,17 @@ public class DrugService {
     public List<Drug> viewAll() {
         return drugRepository.findAll();
     }
-     
+
+    @Transactional
     public void save(Drug drug) {
         drugRepository.save(drug);
     }
      
-    public Drug getById(Integer id) {
-        return drugRepository.findById(id).get();
+    public Drug getDrugById(Integer drugId) {
+        return drugRepository.findDrugByDrugId(drugId);
     }
-     
+
+    @Transactional
     public void deleteById(Integer id) {
         drugRepository.deleteById(id);
     }

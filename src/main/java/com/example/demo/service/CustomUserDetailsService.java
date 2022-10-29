@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class CustomUserDetailsService implements UserDetailsService {
 	
 	@Autowired
@@ -24,6 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String phonenumberOrEmail) throws UsernameNotFoundException {
 		User user = userRepository.findByPhonenumberOrEmail(phonenumberOrEmail, phonenumberOrEmail);
+
 		if (user == null) {
             throw new UsernameNotFoundException(phonenumberOrEmail);
         }
@@ -34,14 +37,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user = userRepository.findByUserId(userId);
 		return new CustomUserDetails(user);
 	}
-	
-	public User findByPhonenumberOrEmail(String phonenumber, String email) {
-		return userRepository.findByPhonenumberOrEmail(phonenumber, email);
-	}
-	
-    public User findByUserId(Integer userId) {
-    	return userRepository.findByUserId(userId);
-    }
     
     public Boolean existsByPhonenumber(String phonenumber) {
     	return userRepository.existsByPhonenumber(phonenumber);
@@ -51,6 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     	return userRepository.existsByEmail(email);
     }
 
+	@Transactional
 	public void save(User user) {
 		userRepository.save(user);
 	}

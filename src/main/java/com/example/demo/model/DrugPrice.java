@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.PositiveOrZero;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -24,9 +25,13 @@ public class DrugPrice {
 	private Integer drugId;
 	private Integer drugUnitId;
 	private String drugName;
+	@PositiveOrZero
 	private Long priceBeforeVat;
+	@PositiveOrZero
 	private Long price;
+	@PositiveOrZero
 	private Long wholesalePrice;
+	@PositiveOrZero
 	private Long wholesalePriceBeforeVat;
 	private String unitName;
 	private Date createdDate;

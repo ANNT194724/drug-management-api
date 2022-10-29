@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 public class DrugUnitPriceDto {
+	@NotBlank
 	@JsonProperty("unit_name")
 	private String unitName;
 	@JsonProperty("unit_qty")
