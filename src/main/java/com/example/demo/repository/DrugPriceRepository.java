@@ -12,7 +12,7 @@ import com.example.demo.model.DrugPrice;
 
 public interface DrugPriceRepository extends JpaRepository<DrugPrice, Integer>{
 
-	List<DrugPrice> findDrugPricesByDrugId(Integer drugId);
+	DrugPrice findDrugPriceByDrugNameAndUnitName(String drugName, String unitName);
 
 	@Modifying
 	@Query(value = "DELETE FROM drug_price WHERE drug_id = :id", nativeQuery = true)

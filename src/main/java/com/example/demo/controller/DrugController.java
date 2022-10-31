@@ -57,15 +57,10 @@ public class DrugController {
 		Drug drug = new Drug();
 		loadDrugFromDto(drugDto, drug);
 		drug.setCreatedDate(Date.valueOf(LocalDate.now()));
-		drug.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
 		drugService.save(drug);
 
 		for(DrugUnitPriceDto unitIter: drugDto.getUnits()) {
-			DrugUnit drugUnit = new DrugUnit();
-			DrugPrice drugPrice = new DrugPrice();
-			saveUnitPriceFromDto(drugUnit, drugPrice, drug, jwt, unitIter);
-			drugUnit.setCreatedDate(Date.valueOf(LocalDate.now()));
-			drugPrice.setCreatedDate(Date.valueOf(LocalDate.now()));
+			saveUnitPriceFromDto(drug, drug.getDrugName(), jwt, unitIter);
 		}
 
 		return new ResponseEntity<>("New drug added successfully", HttpStatus.OK);
@@ -111,12 +106,14 @@ public class DrugController {
 			return new ResponseEntity<>("Drug not found", HttpStatus.NOT_FOUND);
 		}
 		Drug drug = drugService.getDrugById(id);
+		String drugNameBeforeUpdate = drug.getDrugName();
 		loadDrugFromDto(drugDto, drug);
 		drug.setUpdatedDate(Date.valueOf(LocalDate.now()));
 		drug.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
-		drugService.save(drug);
+		for(DrugUnitPriceDto unitIter: drugDto.getUnits()) {
+			saveUnitPriceFromDto(drug, drugNameBeforeUpdate, jwt, unitIter);
+		}
 
-		drugService.save(drug);
 		return new ResponseEntity<>("Updated successfully", HttpStatus.OK);
 	}
 
@@ -133,7 +130,14 @@ public class DrugController {
 	}
 
 	@Transactional
-	public void saveUnitPriceFromDto(DrugUnit unit, DrugPrice price, Drug drug, String jwt, DrugUnitPriceDto dto) {
+	public void saveUnitPriceFromDto(Drug drug, String drugNameBeforeUpdate, String jwt, DrugUnitPriceDto dto) {
+		DrugUnit unit = unitService.findUnitByDrugNameAndUnitName(drugNameBeforeUpdate, dto.getUnitName());
+		if(unit == null) {
+			unit = new DrugUnit();
+			unit.setCreatedDate(Date.valueOf(LocalDate.now()));
+		} else {
+			unit.setUpdatedDate(Date.valueOf(LocalDate.now()));
+		}
 		unit.setUnitName(dto.getUnitName());
 		unit.setUnitQty(dto.getUnitQty());
 		unit.setMaxPrice(dto.getMaxPrice());
@@ -142,6 +146,13 @@ public class DrugController {
 		unit.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
 		unitService.save(unit);
 
+		DrugPrice price = priceService.findPriceByDrugNameAndUnitName(drugNameBeforeUpdate, dto.getUnitName());
+		if(price == null) {
+			price = new DrugPrice();
+			price.setCreatedDate(Date.valueOf(LocalDate.now()));
+		} else {
+			price.setUpdatedDate(Date.valueOf(LocalDate.now()));
+		}
 		price.setPrice(dto.getPrice());
 		price.setPriceBeforeVat(dto.getPriceBeforeVat());
 		price.setWholesalePrice(dto.getWholesalePrice());
@@ -160,12 +171,8 @@ public class DrugController {
 		if(!drugService.existById(id)) {
 			return new ResponseEntity<>("Drug not found", HttpStatus.NOT_FOUND);
 		}
-		DrugUnit drugUnit = new DrugUnit();
-		DrugPrice drugPrice = new DrugPrice();
 		Drug drug = drugService.getDrugById(id);
-		saveUnitPriceFromDto(drugUnit, drugPrice, drug, jwt, dto);
-		drugUnit.setCreatedDate(Date.valueOf(LocalDate.now()));
-		drugPrice.setCreatedDate(Date.valueOf(LocalDate.now()));
+		saveUnitPriceFromDto(drug, drug.getDrugName(), jwt, dto);
 
 		return new ResponseEntity<>("Price added successfully", HttpStatus.OK);
 	}

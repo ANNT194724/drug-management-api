@@ -7,11 +7,9 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.demo.model.DrugUnit;
 
-import java.util.List;
-
 public interface DrugUnitRepository extends JpaRepository<DrugUnit, Integer>{
 
-	List<DrugUnit> findDrugUnitsByDrugId(Integer drugId);
+	DrugUnit findDrugUnitByDrugNameAndUnitName(String drugName, String unitName);
 
 	@Modifying
 	@Query(value = "DELETE FROM drug_unit WHERE drug_id = :id", nativeQuery = true)

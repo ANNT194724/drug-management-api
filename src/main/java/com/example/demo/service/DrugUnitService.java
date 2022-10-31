@@ -7,8 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.demo.model.DrugUnit;
 import com.example.demo.repository.DrugUnitRepository;
 
-import java.util.List;
-
 @Service
 @Transactional(readOnly = true)
 public class DrugUnitService {
@@ -23,5 +21,9 @@ public class DrugUnitService {
     @Transactional
     public void deleteByDrugId(Integer id) {
         drugUnitRepository.deleteByDrugId(id);
+    }
+
+    public DrugUnit findUnitByDrugNameAndUnitName(String drugName, String unitName) {
+        return drugUnitRepository.findDrugUnitByDrugNameAndUnitName(drugName, unitName);
     }
 }
