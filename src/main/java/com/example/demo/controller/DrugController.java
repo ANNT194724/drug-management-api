@@ -60,10 +60,12 @@ public class DrugController {
 		drug.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
 		drugService.save(drug);
 
-		for(DrugUnitPriceDto unit: drugDto.getUnits()) {
+		for(DrugUnitPriceDto unitIter: drugDto.getUnits()) {
 			DrugUnit drugUnit = new DrugUnit();
 			DrugPrice drugPrice = new DrugPrice();
-			saveUnitPriceFromDto(drugUnit, drugPrice, drug, jwt, unit);
+			saveUnitPriceFromDto(drugUnit, drugPrice, drug, jwt, unitIter);
+			drugUnit.setCreatedDate(Date.valueOf(LocalDate.now()));
+			drugPrice.setCreatedDate(Date.valueOf(LocalDate.now()));
 		}
 
 		return new ResponseEntity<>("New drug added successfully", HttpStatus.OK);
