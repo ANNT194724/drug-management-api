@@ -50,10 +50,26 @@ public class DrugController {
 	public List<Drug> viewAll(){
 		return drugService.viewAll();
     }
-	
+
+	@Transactional
 	@PostMapping
 	public ResponseEntity<?> addDrug(@RequestHeader("Authorization") String jwt, @Valid @RequestBody DrugDto drugDto) {
 		Drug drug = new Drug();
+		loadDrugFromDto(drugDto, drug);
+		drug.setCreatedDate(Date.valueOf(LocalDate.now()));
+		drug.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
+		drugService.save(drug);
+
+		for(DrugUnitPriceDto unit: drugDto.getUnits()) {
+			DrugUnit drugUnit = new DrugUnit();
+			DrugPrice drugPrice = new DrugPrice();
+			saveUnitPriceFromDto(drugUnit, drugPrice, drug, jwt, unit);
+		}
+
+		return new ResponseEntity<>("New drug added successfully", HttpStatus.OK);
+	}
+
+	public void loadDrugFromDto(@RequestBody @Valid DrugDto drugDto, Drug drug) {
 		drug.setDrugName(drugDto.getDrugName());
 		drug.setDrugAlias(drugDto.getDrugAlias());
 		drug.setLicenseCode(drugDto.getLicenseCode());
@@ -74,11 +90,6 @@ public class DrugController {
 		drug.setConcentration(drugDto.getConcentration());
 		drug.setVatPercent(drugDto.getVatPercent());
 		drug.setNote(drugDto.getNote());
-		drug.setCreatedDate(Date.valueOf(LocalDate.now()));
-		drug.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
-		
-		drugService.save(drug);
-		return new ResponseEntity<>("New drug added successfully", HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
@@ -89,7 +100,8 @@ public class DrugController {
 		Drug drug = drugService.getDrugById(id);
 		return new ResponseEntity<>(drug, HttpStatus.NOT_FOUND);
 	}
-	
+
+	@Transactional
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateById(@PathVariable Integer id, @RequestHeader("Authorization") String jwt, @RequestBody DrugDto drugDto) {
 		
@@ -97,33 +109,16 @@ public class DrugController {
 			return new ResponseEntity<>("Drug not found", HttpStatus.NOT_FOUND);
 		}
 		Drug drug = drugService.getDrugById(id);
-		drug.setDrugName(drugDto.getDrugName());
-		drug.setDrugAlias(drugDto.getDrugAlias());
-		drug.setLicenseCode(drugDto.getLicenseCode());
-		drug.setBarcode(drugDto.getBarcode());
-		drug.setProviderName(drugDto.getProviderName());
-		drug.setCompanyName(drugDto.getCompanyName());
-		drug.setCountry(drugDto.getCountry());
-		drug.setActiveIngredient(drugDto.getActiveIngredient());
-		drug.setDrugKind(drugDto.getDrugKind());
-		drug.setDescription(drugDto.getDescription());
-		drug.setDirectionForUse(drugDto.getDirectionForUse());
-		drug.setDosage(drugDto.getDosage());
-		drug.setIndication(drugDto.getIndication());
-		drug.setAdverseReaction(drugDto.getAdverseReaction());
-		drug.setContraindication(drugDto.getContraindication());
-		drug.setPrecaution(drugDto.getPrecaution());
-		drug.setOverdose(drugDto.getOverdose());
-		drug.setConcentration(drugDto.getConcentration());
-		drug.setVatPercent(drugDto.getVatPercent());
-		drug.setNote(drugDto.getNote());
-		drug.setUpdatedDate(Date.valueOf(LocalDate.now()));	
+		loadDrugFromDto(drugDto, drug);
+		drug.setUpdatedDate(Date.valueOf(LocalDate.now()));
 		drug.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
-		
+		drugService.save(drug);
+
 		drugService.save(drug);
 		return new ResponseEntity<>("Updated successfully", HttpStatus.OK);
 	}
-	
+
+	@Transactional
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable Integer id) {
 		if(!drugService.existById(id)) {
@@ -136,37 +131,40 @@ public class DrugController {
 	}
 
 	@Transactional
+	public void saveUnitPriceFromDto(DrugUnit unit, DrugPrice price, Drug drug, String jwt, DrugUnitPriceDto dto) {
+		unit.setUnitName(dto.getUnitName());
+		unit.setUnitQty(dto.getUnitQty());
+		unit.setMaxPrice(dto.getMaxPrice());
+		unit.setDrugId(drug.getDrugId());
+		unit.setDrugName(drug.getDrugName());
+		unit.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
+		unitService.save(unit);
+
+		price.setPrice(dto.getPrice());
+		price.setPriceBeforeVat(dto.getPriceBeforeVat());
+		price.setWholesalePrice(dto.getWholesalePrice());
+		price.setWholesalePriceBeforeVat(dto.getWholesalePriceBeforeVat());
+		price.setDrugId(drug.getDrugId());
+		price.setDrugName(drug.getDrugName());
+		price.setUnitName(unit.getUnitName());
+		price.setDrugUnitId(unit.getDrugUnitId());
+		price.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
+		priceService.save(price);
+	}
+
+	@Transactional
 	@PostMapping("/{id}/price")
 	public ResponseEntity<?> addPrice(@PathVariable Integer id, @RequestHeader("Authorization") String jwt, @Valid @RequestBody DrugUnitPriceDto dto) {
 		if(!drugService.existById(id)) {
 			return new ResponseEntity<>("Drug not found", HttpStatus.NOT_FOUND);
 		}
 		DrugUnit drugUnit = new DrugUnit();
-		Drug drug = drugService.getDrugById(id);
-		drugUnit.setUnitName(dto.getUnitName());
-		drugUnit.setUnitQty(dto.getUnitQty());
-		drugUnit.setMaxPrice(dto.getMaxPrice());
-		drugUnit.setDrugId(id);
-		drugUnit.setDrugName(drug.getDrugName());
-		drugUnit.setCreatedDate(Date.valueOf(LocalDate.now()));
-		drugUnit.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
-		
-		unitService.save(drugUnit);
-		
 		DrugPrice drugPrice = new DrugPrice();
-		drugPrice.setPrice(dto.getPrice());
-		drugPrice.setPriceBeforeVat(dto.getPriceBeforeVat());
-		drugPrice.setWholesalePrice(dto.getWholesalePrice());
-		drugPrice.setWholesalePriceBeforeVat(dto.getWholesalePriceBeforeVat());
-		drugPrice.setDrugId(id);
-		drugPrice.setDrugName(drug.getDrugName());
+		Drug drug = drugService.getDrugById(id);
+		saveUnitPriceFromDto(drugUnit, drugPrice, drug, jwt, dto);
+		drugUnit.setCreatedDate(Date.valueOf(LocalDate.now()));
 		drugPrice.setCreatedDate(Date.valueOf(LocalDate.now()));
-		drugPrice.setUnitName(drugUnit.getUnitName());
-		drugPrice.setDrugUnitId(drugUnit.getDrugUnitId());
-		drugPrice.setCreatedDate(Date.valueOf(LocalDate.now()));
-		drugPrice.setUpdatedUser(jwtProvider.getUserIdFromJWT(jwt.substring(7)));
-		
-		priceService.save(drugPrice);
+
 		return new ResponseEntity<>("Price added successfully", HttpStatus.OK);
 	}
 	
@@ -178,14 +176,5 @@ public class DrugController {
 		List<PriceView> priceView = priceService.viewPriceByDrugId(id);
 		return new ResponseEntity<>(priceView, HttpStatus.OK);
 	}
-	
-	@DeleteMapping("/{id}/price")
-	public ResponseEntity<?> deletePrice(@PathVariable Integer id) {
-		if(!drugService.existById(id)) {
-			return new ResponseEntity<>("Drug not found", HttpStatus.NOT_FOUND);
-		}
-		priceService.deleteByDrugId(id);
-		unitService.deleteByDrugId(id);
-		return new ResponseEntity<>("Deleted successfully", HttpStatus.OK);
-	}
+
 }

@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.PositiveOrZero;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -21,10 +23,13 @@ public class DrugUnit {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer drugUnitId;
+	@NotBlank
 	private String unitName;
 	private Integer drugId;
 	private String drugName;
+	@PositiveOrZero
 	private Integer unitQty;
+	@PositiveOrZero
 	private Long maxPrice;
 	private Date createdDate;
 	private Date updatedDate;

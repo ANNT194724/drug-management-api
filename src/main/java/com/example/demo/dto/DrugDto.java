@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 @Data
 public class DrugDto {
@@ -37,6 +39,8 @@ public class DrugDto {
 	private String precaution;
 	private String overdose;
 	private String concentration;
+	@NotEmpty
+	private List<DrugUnitPriceDto> units;
 	@PositiveOrZero
 	@JsonProperty("vat_percent")
 	private Integer vatPercent;

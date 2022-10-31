@@ -11,8 +11,11 @@ import com.example.demo.dto.PriceView;
 import com.example.demo.model.DrugPrice;
 
 public interface DrugPriceRepository extends JpaRepository<DrugPrice, Integer>{
+
+	List<DrugPrice> findDrugPricesByDrugId(Integer drugId);
+
 	@Modifying
-	@Query(value = "DELETE FROM drug_price WHERE drug_unit = :id", nativeQuery = true)
+	@Query(value = "DELETE FROM drug_price WHERE drug_id = :id", nativeQuery = true)
 	void deleteByDrugId(@Param("id") Integer id);
 
 	@Query(value = "select u.drug_unit_id, u.unit_name, unit_qty, max_price, price, price_before_vat, wholesale_price, wholesale_price_before_vat "
