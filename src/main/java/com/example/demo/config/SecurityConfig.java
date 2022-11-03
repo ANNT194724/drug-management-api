@@ -38,7 +38,7 @@ public class SecurityConfig {
 		 http
          .csrf().disable()
          .authorizeRequests()
-         .antMatchers("/api/auth/**").permitAll()
+         .antMatchers("/api/auth/**", "/swagger-ui/**", "/v2/**", "/swagger-resources/**", "/v3/**").permitAll()
 		 .antMatchers(HttpMethod.POST, "/api/drugs/**").hasAuthority("ADMIN")
 		 .antMatchers(HttpMethod.PUT, "/api/drugs/**").hasAuthority("ADMIN")
 		 .antMatchers(HttpMethod.DELETE, "/api/drugs/**").hasAuthority("ADMIN")
