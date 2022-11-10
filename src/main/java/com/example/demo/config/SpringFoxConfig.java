@@ -9,7 +9,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -19,8 +18,8 @@ public class SpringFoxConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiDetails())
-                .securitySchemes(Arrays.asList(apiKey()))
-                .securityContexts(Arrays.asList(securityContext()))
+                .securitySchemes(Collections.singletonList(apiKey()))
+                .securityContexts(Collections.singletonList(securityContext()))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.example.demo"))
                 .paths(PathSelectors.ant("/api/**"))
@@ -51,6 +50,6 @@ public class SpringFoxConfig {
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
         authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(new SecurityReference("JWT", authorizationScopes));
+        return Collections.singletonList(new SecurityReference("JWT", authorizationScopes));
     }
 }

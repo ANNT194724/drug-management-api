@@ -1,6 +1,7 @@
 package com.example.demo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 import com.example.demo.jwt.JwtAuthenticationFilter;
 import com.example.demo.service.CustomUserDetailsService;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableWebSecurity

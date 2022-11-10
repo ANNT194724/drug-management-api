@@ -1,10 +1,10 @@
 package com.example.demo.service;
 
-import java.util.List;
-
-import com.example.demo.model.DrugPrice;
-import com.example.demo.model.DrugUnit;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +17,9 @@ public class DrugService {
 	@Autowired
 	private DrugRepository drugRepository;
 	     
-    public List<Drug> viewAll() {
-        return drugRepository.findAll();
+    public Page<Drug> viewAll() {
+        Pageable pageRequest = PageRequest.of(0, 2, Sort.by("drugName"));
+        return drugRepository.findAll(pageRequest);
     }
 
     @Transactional

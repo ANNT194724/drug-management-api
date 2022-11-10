@@ -13,10 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.dto.LoginDto;
 import com.example.demo.dto.RegisterDto;
@@ -44,16 +42,17 @@ public class AuthController {
 
     @Autowired
     RoleRepository roleRepository;
-    
+
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                (loginDto.getEmail() == null) ? loginDto.getPhonenumber() : loginDto.getEmail(), loginDto.getPassword()));
+                loginDto.getPhonenumberOrEmail(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
         return new ResponseEntity<>("access_token: " + jwt, HttpStatus.OK);
     }
-    
+
+    @Transactional
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterDto registerDto){
     	if(userService.existsByPhonenumber(registerDto.getPhonenumber())) {
@@ -80,7 +79,7 @@ public class AuthController {
             user.getRoles().add(role);
         }
         userService.save(user);
-
+//        userService.copyUser(user.getUserId());
         return new ResponseEntity<>("User registered successfully", HttpStatus.OK);
     }
 }

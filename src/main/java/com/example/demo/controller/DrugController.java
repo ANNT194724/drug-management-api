@@ -4,7 +4,9 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.example.demo.exception.ZeroQuantityException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +49,7 @@ public class DrugController {
 	private JwtTokenProvider jwtProvider;
 	
 	@GetMapping
-	public List<Drug> viewAll(){
+	public Page<Drug> viewAll(){
 		return drugService.viewAll();
     }
 
@@ -130,7 +132,7 @@ public class DrugController {
 	}
 
 	@Transactional
-	public void saveUnitPriceFromDto(Drug drug, String drugNameBeforeUpdate, String jwt, DrugUnitPriceDto dto) {
+	public void saveUnitPriceFromDto(Drug drug, String drugNameBeforeUpdate, String jwt, DrugUnitPriceDto dto) throws ZeroQuantityException {
 		DrugUnit unit = unitService.findUnitByDrugNameAndUnitName(drugNameBeforeUpdate, dto.getUnitName());
 		if(unit == null) {
 			unit = new DrugUnit();
@@ -138,6 +140,11 @@ public class DrugController {
 		} else {
 			unit.setUpdatedDate(Date.valueOf(LocalDate.now()));
 		}
+
+//		if(dto.getUnitQty() == 0) {
+//			throw new ZeroQuantityException("Quality can't be zero");
+//		}
+
 		unit.setUnitName(dto.getUnitName());
 		unit.setUnitQty(dto.getUnitQty());
 		unit.setMaxPrice(dto.getMaxPrice());
